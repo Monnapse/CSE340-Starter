@@ -96,12 +96,20 @@ body {
   padding: 7px;
 }
 
+.hero-card * {
+  text-align: left;
+  width: 100%;
+}
+
 .button-primary {
   background-color: var(--color-primary);
   color: var(--color-text-primary);
   padding: 8px;
   padding-block: 15px;
   cursor: pointer;
+  text-align: center;
+  font-size: 1.1em;
+  font-weight: 700;
 }
 
 .split-sideways {
@@ -138,6 +146,7 @@ body {
 .list {
   height: auto;
   font-size: 1.3em;
+  text-align: left;
 }
 
 .copyright {
