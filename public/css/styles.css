@@ -70,9 +70,19 @@ body {
   padding-inline: 80px;
 }
 
+#top-nav ul {
+  list-style-type: none;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+}
+
 #top-nav a {
   color: var(--color-text-contrast);
   font-size: 1.2em;
+  text-decoration: none;
 }
 
 #hero {
