@@ -108,9 +108,19 @@ Util.buildVehicleDetail = async function (data) {
       </div>
     `
   } else {
-    item = '<p class="notice">Sorry, no matching vehicles could be found.</p>';
+    item = `
+      <h1>404</h1>
+      <p class="notice">Sorry, no matching vehicles could be found.</p>
+    `;
   }
   return item;
 };
+
+/* ****************************************
+ * Middleware For Handling Errors
+ * Wrap other function in this for 
+ * General Error Handling
+ **************************************** */
+Util.handleErrors = fn => (req, res, next) => Promise.resolve(fn(req, res, next)).catch(next)
 
 module.exports = Util;

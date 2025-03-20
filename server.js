@@ -1,5 +1,6 @@
 const baseController = require("./controllers/baseController");
 const inventoryRoute = require("./routes/inventoryRoute");
+const utilities = require("./utilities/");
 
 /* ******************************************
  * This server.js file is the primary file of the 
@@ -40,7 +41,27 @@ app.listen(port, () => {
 });
 
 // Index route
-app.get("/", baseController.buildHome);
+app.get("/", utilities.handleErrors(baseController.buildHome));
 
 // Inventory routes
-app.use("/inv", inventoryRoute)
+app.use("/inv", inventoryRoute);
+
+// File Not Found Route - must be last route in list
+app.use(async (req, res, next) => {
+  next({status: 500, message: 'Sorry, we appear to have lost that page.'})
+})
+
+/* ***********************
+* Express Error Handler
+* Place after all other middleware
+*************************/
+app.use(async (err, req, res, next) => {
+  let nav = await utilities.getNav()
+  console.error(`Error at: "${req.originalUrl}": ${err.message}`)
+  if(err.status == 500){ message = err.message} else {message = 'Oh no! There was a crash. Maybe try a different route?'}
+  res.render("errors/error", {
+    title: err.status || 'Server Error',
+    message,
+    nav
+  })
+})
