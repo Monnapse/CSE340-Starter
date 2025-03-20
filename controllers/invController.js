@@ -19,4 +19,21 @@ invCont.buildByClassificationId = async function (req, res, next) {
   });
 }
 
+invCont.buildByDetailId = async function (req, res, next) {
+  try {
+    const detail_id = req.params.detailId;
+    const data = await invModel.getInventoryByDetailId(detail_id);
+    const detail = await utilities.buildVehicleDetail(data);
+    let nav = await utilities.getNav();
+    const detailName = data.length > 0?  `${data[0]?.detail_name} vehicle` : "Vehicle Not Found";
+    res.render("./inventory/detail", {
+      title: detailName,
+      nav,
+      detail,
+    });
+  } catch (error) {
+    console.error("buildByDetailId error " + error);
+  }
+}
+
 module.exports = invCont;

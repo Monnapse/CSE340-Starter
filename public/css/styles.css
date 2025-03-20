@@ -163,6 +163,13 @@ body {
   font-size: 0.8em;
 }
 
+/* Responsive Image */
+.resp-img {
+  width: 100%;
+  height: auto;
+  object-fit: cover;
+}
+
 @media (max-width: 768px) {
   .split-sideways {
     flex-direction: column;

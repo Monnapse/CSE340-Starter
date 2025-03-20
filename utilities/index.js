@@ -77,4 +77,40 @@ Util.buildClassificationGrid = async function (data) {
   return grid;
 };
 
+
+/* **************************************
+ * Build the classification view HTML
+ * ************************************ */
+Util.buildVehicleDetail = async function (data) {
+  let item;
+  if (data.length > 0) {
+    const vehicle = data[0];
+
+    // Format the price with commas
+    const formattedPrice = new Intl.NumberFormat("en-US", {
+      style: "currency",
+      currency: "USD",
+    }).format(vehicle.inv_price);
+
+    const formattedMiles = new Intl.NumberFormat("en-US").format(vehicle.inv_miles);
+
+    item = `
+      <h1>${vehicle.inv_year} ${vehicle.inv_make}</h1>
+      <div class="split-sideways">
+          <img class="resp-img" src="${vehicle.inv_image}" alt="${vehicle.inv_make} Image" loading="lazy">
+          <div>
+              <h3>${vehicle.inv_make} Details</h3>
+              <span>${formattedPrice}</span>
+              <p><h3>Description: </h3>${vehicle.inv_description}</p>
+              <p><h3>Color: </h3>${vehicle.inv_color}</p>
+              <p><h3>Miles: </h3>${formattedMiles}</p>
+          </div>
+      </div>
+    `
+  } else {
+    item = '<p class="notice">Sorry, no matching vehicles could be found.</p>';
+  }
+  return item;
+};
+
 module.exports = Util;
