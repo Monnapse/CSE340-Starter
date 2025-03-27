@@ -97,7 +97,7 @@ async function createNewInventory(
     return await pool.query(sql, [
       inv_make,
       inv_model,
-      year, // Pass the formatted year
+      year,
       inv_description,
       inv_img_path,
       inv_thumbnail_path,
