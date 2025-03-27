@@ -170,6 +170,15 @@ body {
   object-fit: cover;
 }
 
+/* FORM */
+form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+}
+
 /* Login Form */
 .login-box {
   background-color: #1f2d3d;
@@ -220,7 +229,7 @@ body {
 }
 
 .notice p {
-  color: #fff;
+  color: #ff0000;
   text-align: left;
 }
 
@@ -280,4 +289,20 @@ body {
   #top-nav a {
     font-size: 0.7em;
   }
+}
+
+
+/* MOCK TAILWIND */
+.flex {
+  display: flex;
+}
+.column {
+  flex-direction: column;
+}
+.text-left {
+  text-align: left;
+  width: 100%;
+}
+.w-100 {
+  width: 100%;
 }
