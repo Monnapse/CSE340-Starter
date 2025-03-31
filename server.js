@@ -1,10 +1,11 @@
 const baseController = require("./controllers/baseController");
 const inventoryRoute = require("./routes/inventoryRoute");
-const accountRoute = require("./routes/accountRoute");
+//const accountRoute = require("./routes/accountRoute");
 const utilities = require("./utilities/");
 const session = require("express-session");
 const pool = require('./database/');
-const bodyParser = require("body-parser")
+const bodyParser = require("body-parser");
+const cookieParser = require("cookie-parser");
 
 /* ******************************************
  * This server.js file is the primary file of the 
@@ -50,9 +51,17 @@ app.use(function(req, res, next){
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: true })) // for parsing application/x-www-form-urlencoded
 
+app.use(cookieParser());
+app.use(utilities.checkJWTToken);
+
 app.set("view engine", "ejs");
 app.use(expressLayouts);
 app.set("layout", "./layouts/layout");
+
+app.use((req, res, next) => {
+  res.locals.messages = req.flash("notice") || [];
+  next();
+});
 
 /* ***********************
  * Local Server Information

@@ -1,5 +1,7 @@
 const invModel = require("../models/inventory-model");
 const Util = {};
+const jwt = require("jsonwebtoken");
+require("dotenv").config();
 
 /* ************************
  * Constructs the nav HTML unordered list
@@ -77,14 +79,13 @@ Util.buildClassificationGrid = async function (data) {
   return grid;
 };
 
-
 /* **************************************
  * Build the classification view HTML
  * ************************************ */
 Util.buildVehicleDetail = async function (data) {
   let item;
-  if (data.length > 0) {
-    const vehicle = data[0];
+  if (data) {
+    const vehicle = data;
 
     // Format the price with commas
     const formattedPrice = new Intl.NumberFormat("en-US", {
@@ -92,7 +93,9 @@ Util.buildVehicleDetail = async function (data) {
       currency: "USD",
     }).format(vehicle.inv_price);
 
-    const formattedMiles = new Intl.NumberFormat("en-US").format(vehicle.inv_miles);
+    const formattedMiles = new Intl.NumberFormat("en-US").format(
+      vehicle.inv_miles
+    );
 
     item = `
       <h1>${vehicle.inv_year} ${vehicle.inv_make}</h1>
@@ -106,7 +109,7 @@ Util.buildVehicleDetail = async function (data) {
               <p><h3>Miles: </h3>${formattedMiles}</p>
           </div>
       </div>
-    `
+    `;
   } else {
     item = `
       <h1>404</h1>
@@ -118,9 +121,46 @@ Util.buildVehicleDetail = async function (data) {
 
 /* ****************************************
  * Middleware For Handling Errors
- * Wrap other function in this for 
+ * Wrap other function in this for
  * General Error Handling
  **************************************** */
-Util.handleErrors = fn => (req, res, next) => Promise.resolve(fn(req, res, next)).catch(next)
+Util.handleErrors = (fn) => (req, res, next) =>
+  Promise.resolve(fn(req, res, next)).catch(next);
+
+/* ****************************************
+ * Middleware to check token validity
+ **************************************** */
+Util.checkJWTToken = (req, res, next) => {
+  if (req.cookies.jwt) {
+    jwt.verify(
+      req.cookies.jwt,
+      process.env.ACCESS_TOKEN_SECRET,
+      function (err, accountData) {
+        if (err) {
+          req.flash("Please log in");
+          res.clearCookie("jwt");
+          return res.redirect("/account/login");
+        }
+        res.locals.accountData = accountData;
+        res.locals.loggedin = 1;
+        next();
+      }
+    );
+  } else {
+    next();
+  }
+};
+
+/* ****************************************
+ *  Check Login
+ * ************************************ */
+Util.checkLogin = (req, res, next) => {
+  if (res.locals.loggedin) {
+    next();
+  } else {
+    req.flash("notice", "Please log in.");
+    return res.redirect("/account/login");
+  }
+};
 
 module.exports = Util;

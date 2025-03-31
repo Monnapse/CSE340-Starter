@@ -52,7 +52,7 @@ async function getInventoryByDetailId(inventory_id) {
         WHERE i.inv_id = $1`,
       [inventory_id]
     );
-    return data.rows;
+    return data.rows[0];
   } catch (error) {
     console.error("getclassificationsbyid error " + error);
   }
@@ -71,15 +71,15 @@ async function createNewClassification(classification_name){
 }
 
 /* *****************************
-*   Create new invenotry
+*   Create new inventory
 * *************************** */
 async function createNewInventory(
   inv_class,
   inv_make,
   inv_model,
   inv_description,
-  inv_img_path,
-  inv_thumbnail_path,
+  inv_image,
+  inv_thumbnail,
   inv_price,
   inv_year,
   inv_miles,
@@ -99,8 +99,8 @@ async function createNewInventory(
       inv_model,
       year,
       inv_description,
-      inv_img_path,
-      inv_thumbnail_path,
+      inv_image,
+      inv_thumbnail,
       inv_price,
       inv_miles,
       inv_color,
@@ -111,4 +111,42 @@ async function createNewInventory(
   }
 }
 
-module.exports = { getClassifications, getInventoryByClassificationId, getInventoryByDetailId, checkExistingClassification, createNewClassification, createNewInventory };
+/* ***************************
+ *  Update Inventory Data
+ * ************************** */
+async function updateInventory(
+  inv_id,
+  inv_make,
+  inv_model,
+  inv_description,
+  inv_image,
+  inv_thumbnail,
+  inv_price,
+  inv_year,
+  inv_miles,
+  inv_color,
+  classification_id
+) {
+  try {
+    const sql =
+      "UPDATE public.inventory SET inv_make = $1, inv_model = $2, inv_description = $3, inv_image = $4, inv_thumbnail = $5, inv_price = $6, inv_year = $7, inv_miles = $8, inv_color = $9, classification_id = $10 WHERE inv_id = $11 RETURNING *"
+    const data = await pool.query(sql, [
+      inv_make,
+      inv_model,
+      inv_description,
+      inv_image,
+      inv_thumbnail,
+      inv_price,
+      inv_year,
+      inv_miles,
+      inv_color,
+      classification_id,
+      inv_id
+    ])
+    return data.rows[0]
+  } catch (error) {
+    console.error("model error: " + error)
+  }
+}
+
+module.exports = { getClassifications, getInventoryByClassificationId, getInventoryByDetailId, checkExistingClassification, createNewClassification, createNewInventory, updateInventory };

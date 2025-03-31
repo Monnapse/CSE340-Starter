@@ -12,8 +12,16 @@
       <%  }) %>
        </div>
     <% } %>
+    <% if (messages && messages.length > 0) { %>
+        <div class="notice">
+          <% messages.forEach(message => { %>
+            <p><%= message %></p>
+          <% }) %>
+        </div>
+      <% } %>
+    
 
-    <form action="/inv/add-inventory" method="post">
+    <form action="/inv/update" method="post" id="updateForm">
         <label for="inv_class">Classification</label>
 
         <select class="w-100" id="classification_id" name="inv_class" required>
@@ -53,6 +61,12 @@
         <label for="inv_color">Color</label>
         <input type="text" id="inv_color" name="inv_color" placeholder="Enter a color" required value="<%= locals.inv_color %>">
 
-        <button type="submit">ADD VEHICLE</button>
+        <input type="hidden" name="inv_id"
+        <% if(locals.inv_id) { %> value="<%= locals.inv_id %>"
+        <% } %>>
+
+        <button type="submit" disabled>UPDATE VEHICLE</button>
     </form>
 </div>
+
+<script src="../../js/inv-update.js"></script>

@@ -24,3 +24,18 @@
     <a class="text-left" href="/inv/add-classification">Add New Classification</a>
     <a class="text-left" href="/inv/add-inventory">Add New Vehicle</a>
 </div>
+
+<p>Choose a classification to see those inventory items.</p>
+<select class="w-100" id="classification_id">
+  <option value="" disabled selected>Select a classification</option>
+  <% classifications.forEach(classification => { %>
+      <option value="<%= classification.classification_id %>" 
+          <%= locals.inv_class == classification.classification_id ? "selected" : "" %>>
+          <%= classification.classification_name %>
+      </option>
+  <% }) %>
+</select>
+
+<table id="inventoryDisplay"></table>
+
+<script src="../../js/inventory.js"></script>

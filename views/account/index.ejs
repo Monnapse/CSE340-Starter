@@ -1,0 +1,20 @@
+<% if (title) { %>
+    <h1>
+        <%= title %>
+    </h1>
+<% } else { res.redirect('/') } %>
+
+<% if (errors) { %>
+    <div class="notice">
+   <% errors.array().forEach(error => { %>
+     <p><%= error.msg %></p>
+  <%  }) %>
+   </div>
+<% } %>
+<% if (messages && messages.length > 0) { %>
+    <div class="notice">
+      <% messages.forEach(message => { %>
+        <p><%= message %></p>
+      <% }) %>
+    </div>
+  <% } %>

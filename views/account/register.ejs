@@ -13,6 +13,13 @@
       <%  }) %>
        </div>
     <% } %>
+    <% if (messages && messages.length > 0) { %>
+        <div class="notice">
+          <% messages.forEach(message => { %>
+            <p><%= message %></p>
+          <% }) %>
+        </div>
+      <% } %>
     
     <form action="/account/register" method="post">
         <label for="fname">First Name:</label>

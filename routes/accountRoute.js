@@ -5,6 +5,10 @@ const accountController = require("../controllers/accountController");
 const utilities = require("../utilities/");
 const regValidate = require("../utilities/account-validation");
 
+router.get("/", 
+  utilities.checkLogin,
+  utilities.handleErrors(accountController.buildManagement)
+);
 router.get("/login", utilities.handleErrors(accountController.buildLogin));
 router.get("/register", utilities.handleErrors(accountController.buildSignUp));
 
@@ -21,6 +25,7 @@ router.post(
   "/login",
   regValidate.loginRules(),
   regValidate.checkLogData,
+  utilities.handleErrors(accountController.accountLogin)
 )
 
 module.exports = router;
