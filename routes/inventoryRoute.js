@@ -11,13 +11,20 @@ router.get("", invController.buildInventory);
 router.get("/getInventory/:classification_id", utilities.handleErrors(invController.getInventoryJSON))
 
 // Add Classification
-router.get("/add-classification", invController.buildAddClassification);
+router.get("/add-classification", utilities.handleErrors(invController.buildAddClassification));
 
 router.get("/edit/:inv_id", invController.editInventoryView);
 router.post("/update/", 
   regValidate.addVehicleRules(),
   regValidate.checkUpdateData,
-  invController.updateInventory)
+  utilities.handleErrors(invController.updateInventory))
+
+router.get("/delete/:inv_id", utilities.handleErrors(invController.deleteInventoryView));
+router.post("/delete/", 
+  regValidate.deleteVehicleRules(),
+  regValidate.checkDeleteData,
+  utilities.handleErrors(invController.deleteInventory)
+);
 
 // Process the Add Classification attempt
 router.post(

@@ -229,4 +229,81 @@ validate.checkUpdateData = async (req, res, next) => {
   next();
 };
 
+/*  **********************************
+ *  Delete Vehicle Data Validation Rules
+ * ********************************* */
+validate.deleteVehicleRules = () => {
+  return [
+    body("inv_make")
+      .trim()
+      .escape()
+      .notEmpty()
+      .isLength({ min: 3 })
+      .withMessage("A valid make is required."),
+
+    body("inv_model")
+      .trim()
+      .escape()
+      .notEmpty()
+      .isLength({ min: 3 })
+      .withMessage("A valid model is required."),
+
+    body("inv_price")
+      .trim()
+      .escape()
+      .notEmpty()
+      .isDecimal()
+      .withMessage("A valid price is required."),
+
+    body("inv_year")
+      .trim()
+      .escape()
+      .notEmpty()
+      .isNumeric()
+      .isLength({ min: 4, max: 4 })
+      .withMessage("A valid year is required."),
+
+    body("inv_id")
+      .trim()
+      .escape()
+      .notEmpty()
+      .isNumeric()
+      .withMessage("A valid id is required."),
+  ];
+};
+
+/* ******************************
+ * Check data and return errors or continue to inventory
+ * ***************************** */
+validate.checkDeleteData = async (req, res, next) => {
+  const {
+    inv_make,
+    inv_model,
+    inv_price,
+    inv_year,
+    inv_id
+  } = req.body;
+
+  let errors = [];
+  errors = validationResult(req);
+
+  if (!errors.isEmpty()) {
+    // There are errors. Render the form again with sanitized values/error messages.
+    let nav = await utilities.getNav();
+    res.render("inventory/edit-inventory", {
+      errors,
+      title: `CONFIRM DELETION - THE DELETION IS PERMANENT.`,
+      nav,
+
+      inv_make,
+      inv_model,
+      inv_price,
+      inv_year,
+      inv_id
+    });
+    return;
+  }
+  next();
+};
+
 module.exports = validate;

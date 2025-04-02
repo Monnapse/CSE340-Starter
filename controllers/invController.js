@@ -11,7 +11,7 @@ invCont.buildByClassificationId = async function (req, res, next) {
   const data = await invModel.getInventoryByClassificationId(classification_id);
   const grid = await utilities.buildClassificationGrid(data);
   let nav = await utilities.getNav();
-  const className = data[0].classification_name;
+  const className = data[0]?.classification_name;
   res.render("./inventory/classification", {
     title: className + " vehicles",
     nav,
@@ -236,7 +236,6 @@ invCont.updateInventory = async function (req, res, next) {
   } else {
     //const classificationSelect = await utilities.buildClassificationList(classification_id)
     const classifications = await invModel.getClassifications();
-    console.log(classifications.rows);
     const itemName = `${inv_make} ${inv_model}`;
     req.flash("notice", "Sorry, the insert failed.");
     res.status(501).render("inventory/edit-inventory", {
@@ -256,6 +255,63 @@ invCont.updateInventory = async function (req, res, next) {
       inv_miles,
       inv_color,
       classification_id,
+    });
+  }
+};
+
+/* ***************************
+ *  Build delete inventory view
+ * ************************** */
+invCont.deleteInventoryView = async function (req, res, next) {
+  const inv_id = parseInt(req.params.inv_id);
+  let nav = await utilities.getNav();
+  const itemData = await invModel.getInventoryByDetailId(inv_id);
+  res.render("./inventory/delete-inventory", {
+    title: "CONFIRM DELETION - THE DELETION IS PERMANENT.",
+    nav,
+    errors: null,
+    inv_id: itemData.inv_id,
+    inv_make: itemData.inv_make,
+    inv_model: itemData.inv_model,
+    inv_year: itemData.inv_year,
+    inv_price: itemData.inv_price,
+  });
+};
+
+/* ***************************
+ *  Delete Inventory Data
+ * ************************** */
+invCont.deleteInventory = async function (req, res, next) {
+  let nav = await utilities.getNav();
+  const {
+    inv_id,
+    inv_make,
+    inv_model,
+    inv_price,
+    inv_year,
+  } = req.body;
+  const updateResult = await invModel.deleteInventoryItem(
+    inv_id,
+    inv_make,
+    inv_model,
+    inv_price,
+    inv_year,
+  );
+
+  if (updateResult) {
+    req.flash("notice", `The deletion was successful.`);
+    res.redirect("/inv/");
+  } else {
+    req.flash("notice", "Sorry, the delete failed.");
+    res.status(501).render("inventory/edit-inventory", {
+      title: "CONFIRM DELETION - THE DELETION IS PERMANENT.",
+      nav,
+      errors: null,
+      inv_id,
+      inv_make,
+      inv_model,
+      inv_year,
+      inv_price,
     });
   }
 };
