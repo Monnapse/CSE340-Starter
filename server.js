@@ -6,6 +6,7 @@ const session = require("express-session");
 const pool = require('./database/');
 const bodyParser = require("body-parser");
 const cookieParser = require("cookie-parser");
+const accountController = require("./controllers/accountController");
 
 /* ******************************************
  * This server.js file is the primary file of the 
@@ -58,8 +59,18 @@ app.set("view engine", "ejs");
 app.use(expressLayouts);
 app.set("layout", "./layouts/layout");
 
-app.use((req, res, next) => {
+app.use(async (req, res, next) => {
   res.locals.messages = req.flash("notice") || [];
+  
+  const account_data = await accountController.getAccountData(req);
+
+  if (account_data) {
+    res.locals.account_type = account_data.account_type;
+    res.locals.account_firstname = account_data.account_firstname;
+  }
+
+  res.locals.loggedin = account_data ? true : false;
+
   next();
 });
 

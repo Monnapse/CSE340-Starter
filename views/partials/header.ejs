@@ -3,6 +3,12 @@
         <a class="decor-hide" href="/" title="Return to home page">CSE Motors</a>
     </span>
     <div id="tools">
-        <a class="decor-hide" title="Click to log in" href="/account/login">My Account</a>
+        <% if (typeof loggedin !== "undefined" && loggedin) { %>
+            <a class="decor-hide" title="Click to log out" href="/account/">Welcome <%= locals.account_firstname %></a>
+            
+            <a class="decor-hide" title="Click to log out" href="/account/logout">Logout</a>
+        <% } else { %>
+            <a class="decor-hide" title="Click to log in" href="/account/login">My Account</a>
+        <% } %>
     </div>
 </header>

@@ -18,3 +18,13 @@
       <% }) %>
     </div>
   <% } %>
+
+<h2>Welcome <%= locals.account_firstname %></h2>
+
+<a href="/account/update">Edit Account Information</a>
+
+<% if (account_type == "Admin" || account_type == "Employee") { %>
+  <h2>Inventory Management</h2>
+  <a class="decor-hide" title="Click to log out" href="/inv/">Manage Inventory</a>
+<% } else { %>
+<% } %>
