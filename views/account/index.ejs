@@ -22,6 +22,8 @@
 <h2>Welcome <%= locals.account_firstname %></h2>
 
 <a href="/account/update">Edit Account Information</a>
+<br>
+<a href="/inv/favorites">Vehicle Favorites</a>
 
 <% if (account_type == "Admin" || account_type == "Employee") { %>
   <h2>Inventory Management</h2>

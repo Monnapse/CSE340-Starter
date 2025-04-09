@@ -82,7 +82,8 @@ Util.buildClassificationGrid = async function (data) {
 /* **************************************
  * Build the classification view HTML
  * ************************************ */
-Util.buildVehicleDetail = async function (data) {
+Util.buildVehicleDetail = async function (data, loggedIn, isFavorited) {
+  console.log("buildVehicleDetail", data, loggedIn, isFavorited);
   let item;
   if (data) {
     const vehicle = data;
@@ -97,6 +98,8 @@ Util.buildVehicleDetail = async function (data) {
       vehicle.inv_miles
     );
 
+    favorite = `<a href="/inv/favorite/${vehicle.inv_id}">${isFavorited ? "Remove from Favorites" : "Add to Favorites"}</a>`;
+
     item = `
       <h1>${vehicle.inv_year} ${vehicle.inv_make}</h1>
       <div class="split-sideways">
@@ -107,6 +110,7 @@ Util.buildVehicleDetail = async function (data) {
               <p><h3>Description: </h3>${vehicle.inv_description}</p>
               <p><h3>Color: </h3>${vehicle.inv_color}</p>
               <p><h3>Miles: </h3>${formattedMiles}</p>
+              ${loggedIn ? favorite : ""}
           </div>
       </div>
     `;
@@ -157,10 +161,22 @@ Util.checkJWTToken = (req, res, next) => {
 Util.checkLogin = (req, res, next) => {
   if (res.locals.loggedin && req.cookies.jwt) {
     next();
+    return true;
   } else {
     req.flash("notice", "Please log in.");
     return res.redirect("/account/login");
   }
+  return false;
+};
+
+/* ****************************************
+ *  Check Login
+ * ************************************ */
+Util.checkLoginNoRedirect = (req, res, next) => {
+  if (res.locals.loggedin && req.cookies.jwt) {
+    return true;
+  }
+  return false;
 };
 
 module.exports = Util;

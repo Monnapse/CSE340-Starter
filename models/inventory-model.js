@@ -41,6 +41,24 @@ async function getInventoryByClassificationId(classification_id) {
 }
 
 /* ***************************
+ *  Get all inventory items and classification_name by classification_id
+ * ************************** */
+async function getAccountFavorites(account_id) {
+  try {
+    const data = await pool.query(
+      `SELECT * FROM public.inventory i
+	      JOIN public.account_favorite af ON i.inv_id = af.inv_id
+	      WHERE af.account_id = $1`,
+      [account_id]
+    );
+    return data.rows;
+  } catch (error) {
+    console.error("getclassificationsbyid error " + error);
+  }
+}
+
+
+/* ***************************
  *  Get inventory item and classification_name by classification_id
  * ************************** */
 async function getInventoryByDetailId(inventory_id) {
@@ -162,4 +180,67 @@ async function deleteInventoryItem(inv_id) {
   }
 }
 
-module.exports = { getClassifications, getInventoryByClassificationId, getInventoryByDetailId, checkExistingClassification, createNewClassification, createNewInventory, updateInventory, deleteInventoryItem };
+/* ***************************
+  Check if user has vehicle favorited
+* ************************** */
+async function isFavorited(inv_id, accountId) {
+  try {
+    const sql = 'SELECT account_id, inv_id FROM public.account_favorite WHERE account_id=$1 AND inv_id=$2'
+    const data = await pool.query(sql, [accountId, inv_id])
+    return data.rowCount > 0 ? true : false
+    //return data
+  } catch (error) {
+    new Error("Inventory Check Error")
+  }
+}
+
+/* ***************************
+  Adds vehicle to users favorites
+* ************************** */
+async function addFavorite(inv_id, accountId) {
+  try {
+    console.log("addFavorite", inv_id, accountId)
+    const sql = 'INSERT INTO public.account_favorite(account_id, inv_id) VALUES ($1, $2)'
+    const data = await pool.query(sql, [accountId, inv_id])
+    //return data.rowCount > 0 ? true : false
+    return data
+  } catch (error) {
+    new Error("Add Inventory Error")
+  }
+}
+
+/* ***************************
+  Adds vehicle to users favorites
+* ************************** */
+async function removeFavorite(inv_id, accountId) {
+  try {
+    const sql = 'DELETE FROM public.account_favorite WHERE account_id=$1 AND inv_id=$2'
+    const data = await pool.query(sql, [accountId, inv_id])
+    //return data.rowCount > 0 ? true : false
+    return data
+  } catch (error) {
+    new Error("Delete Inventory Error")
+  }
+}
+
+/* ***************************
+  Toggle users vehicle favorite status
+* ************************** */
+async function toggleVehicleFavorite(inv_id, accountId) {
+  try {
+    const favorited = await isFavorited(inv_id, accountId);
+    console.log("isFavorited", favorited);
+    if (favorited) {
+      await removeFavorite(inv_id, accountId)
+    } else {
+      await addFavorite(inv_id, accountId)
+    }
+    return !favorited;
+  } catch (error) {
+    new Error("Toggle Inventory Error")
+  }
+}
+
+module.exports = { getClassifications, getInventoryByClassificationId, getInventoryByDetailId, checkExistingClassification, 
+  createNewClassification, createNewInventory, updateInventory, deleteInventoryItem, toggleVehicleFavorite, isFavorited, addFavorite, removeFavorite,
+  getAccountFavorites };

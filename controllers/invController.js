@@ -1,5 +1,7 @@
 const invModel = require("../models/inventory-model");
+const Util = require("../utilities/");
 const utilities = require("../utilities/");
+const accountController = require("./accountController");
 
 const invCont = {};
 
@@ -19,14 +21,34 @@ invCont.buildByClassificationId = async function (req, res, next) {
   });
 };
 
+/* ***************************
+  *  Build inventory by favorites view
+  * ************************** */ 
+invCont.buildFavoritesView = async function (req, res, next) {
+  const playerData = await accountController.getAccountData(req);
+  const data = await invModel.getAccountFavorites(playerData.account_id);
+  const grid = await utilities.buildClassificationGrid(data);
+  let nav = await utilities.getNav();
+  //const className = data[0]?.classification_name;
+  res.render("./inventory/favorites", {
+    title: "Favorite vehicles",
+    nav,
+    grid,
+  });
+};
+
+
 invCont.buildByDetailId = async function (req, res, next) {
   try {
     const detail_id = req.params.detailId;
     const data = await invModel.getInventoryByDetailId(detail_id);
-    const detail = await utilities.buildVehicleDetail(data);
-    console.log(detail);
+    const playerData = await accountController.getAccountData(req)
+    const isFavorited = await invModel.isFavorited(detail_id, playerData.account_id);
+    const loggedIn = Util.checkLoginNoRedirect(req, res, next);
+    const detail = await utilities.buildVehicleDetail(data, loggedIn, isFavorited);
     let nav = await utilities.getNav();
-    const detailName = data.length > 0 ? `${data[0]?.detail_name} vehicle` : "Vehicle Not Found";
+    //const detailName = data.length > 0 ? `${data[0]?.detail_name} vehicle` : "Vehicle Not Found";
+    const detailName = data ? `${data.inv_make} vehicle` : "Vehicle Not Found";
 
     res.render("./inventory/detail", {
       title: detailName,
@@ -35,6 +57,26 @@ invCont.buildByDetailId = async function (req, res, next) {
     });
   } catch (error) {
     console.error("buildByDetailId error " + error);
+    next(error);
+  }
+};
+
+/* ***************************
+  *  Add to favorites
+  * ************************** */
+
+invCont.toggleFavorite = async function (req, res, next) {
+  try {
+    console.log("toggleFavorite called");
+    const detail_id = req.params.detailId;
+
+    const playerData = await accountController.getAccountData(req);
+
+    await invModel.toggleVehicleFavorite(detail_id, playerData.account_id);
+
+    res.redirect("/inv/detail/" + detail_id);
+  } catch (error) {
+    console.error("toggleFavorite error " + error);
   }
 };
 

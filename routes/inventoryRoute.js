@@ -68,4 +68,11 @@ router.get("/type/:classificationId", invController.buildByClassificationId);
 // Route to build inventory by detail view
 router.get("/detail/:detailId", invController.buildByDetailId)
 
+router.get(
+  "/favorite/:detailId", 
+  utilities.handleErrors(invController.toggleFavorite), 
+);
+
+router.get("/favorites", utilities.handleErrors(invController.buildFavoritesView));
+
 module.exports = router;
